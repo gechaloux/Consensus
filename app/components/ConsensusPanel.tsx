@@ -1,17 +1,18 @@
 'use client'
 
-import { ConsensusResult, MODELS, ModelId } from '@/types'
+import { ConsensusResult, ModelId, ModelInfo } from '@/types'
 
 interface Props {
   result: ConsensusResult
+  models: ModelInfo[]
   error?: string
 }
 
-function modelInfo(id: ModelId) {
-  return MODELS.find(m => m.id === id)!
+function modelInfo(models: ModelInfo[], id: ModelId) {
+  return models.find(m => m.id === id) ?? { id, name: id, provider: '', color: '#888' }
 }
 
-export default function ConsensusPanel({ result, error }: Props) {
+export default function ConsensusPanel({ result, models, error }: Props) {
   if (error) {
     return (
       <div className="cq-consensus-unavail">
@@ -51,7 +52,7 @@ export default function ConsensusPanel({ result, error }: Props) {
             {result.largestClusterModels.length === 0 ? (
               <div className="cq-chip-empty">— none —</div>
             ) : result.largestClusterModels.map(id => {
-              const m = modelInfo(id)
+              const m = modelInfo(models, id)
               return (
                 <span key={id} className="cq-chip cq-chip-pos">
                   <span className="cq-chip-mark" style={{ backgroundColor: m.color }} />
@@ -67,7 +68,7 @@ export default function ConsensusPanel({ result, error }: Props) {
             {result.outlierModels.length === 0 ? (
               <div className="cq-chip-empty">— none —</div>
             ) : result.outlierModels.map(id => {
-              const m = modelInfo(id)
+              const m = modelInfo(models, id)
               return (
                 <span key={id} className="cq-chip cq-chip-neg">
                   <span className="cq-chip-mark" style={{ backgroundColor: m.color }} />
@@ -86,14 +87,14 @@ export default function ConsensusPanel({ result, error }: Props) {
             <tr>
               <th />
               {modelIds.map(id => (
-                <th key={id}>{modelInfo(id).name}</th>
+                <th key={id}>{modelInfo(models, id).name}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {modelIds.map(rowId => (
               <tr key={rowId}>
-                <th>{modelInfo(rowId).name}</th>
+                <th>{modelInfo(models, rowId).name}</th>
                 {modelIds.map(colId => {
                   if (rowId === colId) {
                     return <td key={colId} className="cq-cell cq-cell-self">—</td>

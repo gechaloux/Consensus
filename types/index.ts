@@ -1,8 +1,4 @@
-export type ModelId =
-  | 'gpt-4o'
-  | 'claude-sonnet-4-6'
-  | 'gemini-2.0-flash'
-  | 'llama-3.3-70b-versatile'
+export type ModelId = string
 
 export interface ModelInfo {
   id: ModelId
@@ -25,7 +21,7 @@ export interface ProviderCallbacks {
 }
 
 export interface SSEEvent {
-  type: 'chunk' | 'done' | 'error' | 'consensus' | 'consensus_error'
+  type: 'chunk' | 'done' | 'error' | 'consensus' | 'consensus_error' | 'models'
   model?: ModelId
   chunk?: string
   fullResponse?: string
@@ -33,6 +29,13 @@ export interface SSEEvent {
   error?: string
   consensus?: ConsensusResult
   consensusError?: string
+  models?: ModelInfo[]
+}
+
+export interface BalanceInfo {
+  status: 'ok' | 'unavailable' | 'error'
+  availableUsd: number | null
+  error?: string
 }
 
 export interface ConsensusResult {

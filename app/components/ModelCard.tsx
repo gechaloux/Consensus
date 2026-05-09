@@ -1,6 +1,6 @@
 'use client'
 
-import { ModelInfo } from '@/types'
+import { BalanceInfo, ModelInfo } from '@/types'
 
 interface ModelState {
   text: string
@@ -12,6 +12,7 @@ interface ModelState {
 interface Props {
   model: ModelInfo
   state?: ModelState
+  balance?: BalanceInfo
 }
 
 function tint(hex: string, alpha: number): string {
@@ -23,7 +24,22 @@ function tint(hex: string, alpha: number): string {
   return `rgb(${mix(r)}, ${mix(g)}, ${mix(b)})`
 }
 
-export default function ModelCard({ model, state }: Props) {
+function BalanceBadge({ balance }: { balance?: BalanceInfo }) {
+  if (!balance) return null
+  if (balance.status === 'ok' && balance.availableUsd !== null) {
+    return (
+      <span className="cq-balance cq-balance-ok">
+        ${balance.availableUsd.toFixed(2)}
+      </span>
+    )
+  }
+  if (balance.status === 'unavailable') {
+    return <span className="cq-balance cq-balance-na">balance N/A</span>
+  }
+  return <span className="cq-balance cq-balance-err">balance error</span>
+}
+
+export default function ModelCard({ model, state, balance }: Props) {
   const streaming = !state?.done && !!state?.text
   const waiting = !state?.done && !state?.text && !state?.error
   const hasError = !!state?.error
@@ -39,7 +55,10 @@ export default function ModelCard({ model, state }: Props) {
       >
         <div>
           <div className="cq-card-name">{model.name}</div>
-          <div className="cq-card-provider">{model.provider}</div>
+          <div className="cq-card-provider-row">
+            <span className="cq-card-provider">{model.provider}</span>
+            <BalanceBadge balance={balance} />
+          </div>
         </div>
         <div className="cq-card-status">
           {streaming && <span className="cq-pulse" aria-label="streaming" />}

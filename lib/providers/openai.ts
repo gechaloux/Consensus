@@ -8,7 +8,7 @@ export async function streamOpenAI(question: string, callbacks: ProviderCallback
 
   try {
     const stream = await client.chat.completions.create({
-      model: 'gpt-4o',
+      model: process.env.OPENAI_MODEL ?? 'gpt-4o',
       messages: [{ role: 'user', content: question }],
       stream: true,
     }, { signal })

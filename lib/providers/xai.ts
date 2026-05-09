@@ -1,14 +1,17 @@
-import Groq from 'groq-sdk'
+import OpenAI from 'openai'
 import { ProviderCallbacks } from '@/types'
 
-export async function streamGroq(question: string, callbacks: ProviderCallbacks, signal?: AbortSignal) {
-  const client = new Groq({ apiKey: process.env.GROQ_API_KEY })
+export async function streamXAI(question: string, callbacks: ProviderCallbacks, signal?: AbortSignal) {
+  const client = new OpenAI({
+    apiKey: process.env.XAI_API_KEY,
+    baseURL: 'https://api.x.ai/v1',
+  })
   const start = Date.now()
   let full = ''
 
   try {
     const stream = await client.chat.completions.create({
-      model: process.env.GROQ_MODEL ?? 'llama-3.3-70b-versatile',
+      model: process.env.XAI_MODEL ?? 'grok-3',
       messages: [{ role: 'user', content: question }],
       stream: true,
     }, { signal })

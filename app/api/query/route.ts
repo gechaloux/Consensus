@@ -2,10 +2,11 @@ import { NextRequest } from 'next/server'
 import { streamOpenAI } from '@/lib/providers/openai'
 import { streamAnthropic } from '@/lib/providers/anthropic'
 import { streamGemini } from '@/lib/providers/gemini'
-import { streamGroq } from '@/lib/providers/groq'
+import { streamXAI } from '@/lib/providers/xai'
 import { getEmbeddings } from '@/lib/consensus/embeddings'
 import { computeConsensus } from '@/lib/consensus/similarity'
 import { ModelId, ProviderCallbacks, SSEEvent } from '@/types'
+import { getActiveModels } from '@/lib/models'
 
 const PROVIDER_TIMEOUT_MS = 30_000
 
@@ -28,6 +29,9 @@ export async function POST(req: NextRequest) {
         controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`))
       }
 
+      const activeModels = getActiveModels()
+      send({ type: 'models', models: activeModels })
+
       const makeCallbacks = (modelId: ModelId): ProviderCallbacks => ({
         onChunk: (chunk) => send({ type: 'chunk', model: modelId, chunk }),
         onComplete: (fullResponse, latencyMs) => {
@@ -37,11 +41,12 @@ export async function POST(req: NextRequest) {
         onError: (error) => send({ type: 'error', model: modelId, error }),
       })
 
+      const [openai, anthropic, google, groq] = activeModels
       await Promise.allSettled([
-        streamOpenAI(question, makeCallbacks('gpt-4o'), AbortSignal.timeout(PROVIDER_TIMEOUT_MS)),
-        streamAnthropic(question, makeCallbacks('claude-sonnet-4-6'), AbortSignal.timeout(PROVIDER_TIMEOUT_MS)),
-        streamGemini(question, makeCallbacks('gemini-2.0-flash'), AbortSignal.timeout(PROVIDER_TIMEOUT_MS)),
-        streamGroq(question, makeCallbacks('llama-3.3-70b-versatile'), AbortSignal.timeout(PROVIDER_TIMEOUT_MS)),
+        streamOpenAI(question, makeCallbacks(openai.id), AbortSignal.timeout(PROVIDER_TIMEOUT_MS)),
+        streamAnthropic(question, makeCallbacks(anthropic.id), AbortSignal.timeout(PROVIDER_TIMEOUT_MS)),
+        streamGemini(question, makeCallbacks(google.id), AbortSignal.timeout(PROVIDER_TIMEOUT_MS)),
+        streamXAI(question, makeCallbacks(groq.id), AbortSignal.timeout(PROVIDER_TIMEOUT_MS)),
       ])
 
       const entries = Array.from(completedResponses.entries())

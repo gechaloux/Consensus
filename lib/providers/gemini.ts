@@ -3,7 +3,7 @@ import { ProviderCallbacks } from '@/types'
 
 export async function streamGemini(question: string, callbacks: ProviderCallbacks, signal?: AbortSignal) {
   const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!)
-  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' })
+  const model = genAI.getGenerativeModel({ model: process.env.GOOGLE_MODEL ?? 'gemini-2.0-flash' })
   const start = Date.now()
   let full = ''
 

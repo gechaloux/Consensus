@@ -239,11 +239,29 @@
   color: var(--text);
 }
 
+.cq-card-provider-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 1px;
+}
+
 .cq-card-provider {
   font-size: 11px;
   color: var(--text-mute);
-  margin-top: 1px;
 }
+
+.cq-balance {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-weight: 500;
+}
+
+.cq-balance-ok  { background: var(--pos-tint);  color: var(--pos-text); }
+.cq-balance-na  { background: #F3F4F6;           color: var(--text-mute); }
+.cq-balance-err { background: var(--neg-tint);   color: var(--neg-text); }
 
 .cq-card-status {
   display: flex;
@@ -537,6 +555,46 @@
 .cq-cell-hi   { background: var(--pos-tint);    color: var(--pos-text); }
 .cq-cell-mid  { background: var(--warn-tint);   color: var(--warn-text); }
 .cq-cell-lo   { background: var(--neg-tint);    color: var(--neg-text); }
+
+/* =========================================================================
+   Retry / reconvene
+   ========================================================================= */
+
+.cq-retry {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  background: var(--warn-tint);
+  border: 1px solid var(--warn-border);
+  border-radius: var(--radius-lg);
+}
+
+.cq-btn-retry {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--warn);
+  color: #fff;
+  border: 0;
+  border-radius: var(--radius);
+  padding: 9px 18px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 120ms;
+  flex-shrink: 0;
+}
+
+.cq-btn-retry:hover { opacity: 0.88; }
+
+.cq-retry-hint {
+  font-size: 12px;
+  color: var(--warn-text);
+  line-height: 1.45;
+}
 
 /* unavailable / loading placeholder */
 
